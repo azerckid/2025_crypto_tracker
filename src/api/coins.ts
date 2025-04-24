@@ -2,7 +2,6 @@ import axios from 'axios';
 
 // API 기본 URL
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3';
-const OHLCV_URL = 'https://ohlcv-api.nomadcoders.workers.dev';
 
 // 타입 정의
 export interface Coin {
@@ -53,17 +52,6 @@ export interface CoinPriceData {
     total_volumes: [number, number][]; // [timestamp, total_volume]
 }
 
-export interface OHLCV {
-    time_open: number;
-    time_close: number;
-    open: string;
-    high: string;
-    low: string;
-    close: string;
-    volume: string;
-    market_cap: number;
-}
-
 // API 함수
 export const fetchCoins = async (page: number = 1, perPage: number = 20): Promise<Coin[]> => {
     const response = await axios.get(`${COINGECKO_URL}/coins/markets`, {
@@ -96,17 +84,8 @@ export const fetchCoinPriceHistory = async (coinId: string): Promise<CoinPriceDa
     const response = await axios.get(`${COINGECKO_URL}/coins/${coinId}/market_chart`, {
         params: {
             vs_currency: 'usd',
-            days: 7,
+            days: 30,
             interval: 'daily',
-        },
-    });
-    return response.data;
-};
-
-export const fetchCoinOHLCV = async (coinId: string): Promise<OHLCV[]> => {
-    const response = await axios.get(`${OHLCV_URL}`, {
-        params: {
-            coinId,
         },
     });
     return response.data;

@@ -1,7 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
-import { fetchCoinDetail, CoinDetail } from '../api/coins';
+import { useState } from 'react';
+import { fetchCoinDetail, fetchCoinPriceHistory, CoinDetail, CoinPriceData } from '../api/coins';
+import PriceChart from '../components/PriceChart';
 
 const CoinContainer = styled.div`
   padding: ${props => props.theme.spacing.md};
@@ -78,6 +80,26 @@ const CoinSymbol = styled.span`
   text-transform: uppercase;
 `;
 
+const Tabs = styled.div`
+  display: flex;
+  gap: ${props => props.theme.spacing.md};
+  margin-bottom: ${props => props.theme.spacing.lg};
+`;
+
+const Tab = styled.button<{ isActive: boolean }>`
+  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.lg};
+  background-color: ${props => props.isActive ? props.theme.colors.primary : props.theme.colors.surface};
+  color: ${props => props.isActive ? 'white' : props.theme.colors.text};
+  border: none;
+  border-radius: ${props => props.theme.borderRadius.md};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 const CoinDescription = styled.div`
   margin-top: ${props => props.theme.spacing.lg};
   line-height: 1.6;
@@ -109,9 +131,14 @@ const PriceValue = styled.div`
   color: ${props => props.theme.colors.text};
 `;
 
+const ContentContainer = styled.div`
+  margin-top: ${props => props.theme.spacing.lg};
+`;
+
 const Coin = () => {
   const { coinId } = useParams<{ coinId: string }>();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'price' | 'chart'>('price');
 
   const { data: coinDetail, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useQuery<CoinDetail>({
     queryKey: ['coinDetail', coinId],
@@ -121,24 +148,34 @@ const Coin = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  const { data: priceHistory, isLoading: isLoadingPrice, isError: isPriceError } = useQuery<CoinPriceData[]>({
+    queryKey: ['coinPrice', coinId],
+    queryFn: () => fetchCoinPriceHistory(coinId!),
+    enabled: !!coinId && activeTab === 'chart',
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   if (isLoadingDetail) {
     return (
       <CoinContainer>
         <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
         <LoadingSpinner>
-          Loading coin data...
+          Loading coin details...
         </LoadingSpinner>
       </CoinContainer>
     );
   }
 
-  if (isDetailError) {
+  if (isDetailError || (activeTab === 'chart' && isPriceError)) {
     return (
       <CoinContainer>
         <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
         <ErrorMessage>
           <div>Error loading coin data. Please try again later.</div>
-          <RetryButton onClick={() => refetchDetail()}>Retry</RetryButton>
+          <RetryButton onClick={() => {
+            refetchDetail();
+          }}>Retry</RetryButton>
         </ErrorMessage>
       </CoinContainer>
     );
@@ -166,25 +203,57 @@ const Coin = () => {
         </CoinInfo>
       </CoinHeader>
 
-      <PriceInfo>
-        <PriceCard>
-          <PriceLabel>Current Price</PriceLabel>
-          <PriceValue>${coinDetail.market_data.current_price.usd.toLocaleString()}</PriceValue>
-        </PriceCard>
-        <PriceCard>
-          <PriceLabel>All Time High</PriceLabel>
-          <PriceValue>${coinDetail.market_data.ath.usd.toLocaleString()}</PriceValue>
-        </PriceCard>
-        <PriceCard>
-          <PriceLabel>All Time Low</PriceLabel>
-          <PriceValue>${coinDetail.market_data.atl.usd.toLocaleString()}</PriceValue>
-        </PriceCard>
-      </PriceInfo>
+      <Tabs>
+        <Tab
+          isActive={activeTab === 'price'}
+          onClick={() => setActiveTab('price')}
+        >
+          Price
+        </Tab>
+        <Tab
+          isActive={activeTab === 'chart'}
+          onClick={() => setActiveTab('chart')}
+        >
+          Chart
+        </Tab>
+      </Tabs>
 
-      <CoinDescription>
-        <h3>About {coinDetail.name}</h3>
-        <p>{coinDetail.description.en}</p>
-      </CoinDescription>
+      <ContentContainer>
+        {activeTab === 'price' && (
+          <>
+            <PriceInfo>
+              <PriceCard>
+                <PriceLabel>Current Price</PriceLabel>
+                <PriceValue>${coinDetail.market_data.current_price.usd.toLocaleString()}</PriceValue>
+              </PriceCard>
+              <PriceCard>
+                <PriceLabel>All Time High</PriceLabel>
+                <PriceValue>${coinDetail.market_data.ath.usd.toLocaleString()}</PriceValue>
+              </PriceCard>
+              <PriceCard>
+                <PriceLabel>All Time Low</PriceLabel>
+                <PriceValue>${coinDetail.market_data.atl.usd.toLocaleString()}</PriceValue>
+              </PriceCard>
+            </PriceInfo>
+
+            <CoinDescription>
+              <h3>About {coinDetail.name}</h3>
+              <p>{coinDetail.description.en}</p>
+            </CoinDescription>
+          </>
+        )}
+
+        {activeTab === 'chart' && (
+          isLoadingPrice ? (
+            <LoadingSpinner>Loading price history...</LoadingSpinner>
+          ) : (
+            <PriceChart
+              priceHistory={priceHistory || []}
+              coinName={coinDetail.name}
+            />
+          )
+        )}
+      </ContentContainer>
     </CoinContainer>
   );
 };

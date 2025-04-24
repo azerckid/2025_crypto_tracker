@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTheme } from './contexts/ThemeContext'
+import AppRoutes from './routes'
 
 const Container = styled.div`
   max-width: 1200px;
@@ -55,10 +56,7 @@ function App() {
           </ThemeToggle>
         </Header>
         <PageContainer>
-          <Routes>
-            <Route path="/" element={<div>Home Page</div>} />
-            <Route path="/about" element={<div>About Page</div>} />
-          </Routes>
+          <AppRoutes />
         </PageContainer>
       </Container>
     </Router>

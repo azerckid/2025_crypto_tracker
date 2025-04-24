@@ -1,54 +1,75 @@
-# React + TypeScript + Vite
+# Crypto Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+암호화폐 시장을 실시간으로 추적하고 분석할 수 있는 웹 애플리케이션입니다.
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18
+- TypeScript
+- Vite
+- React Router DOM
+- Styled Components
+- ESLint
 
-## Expanding the ESLint configuration
+## 주요 기능
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 실시간 암호화폐 가격 추적
+- 다크/라이트 모드 지원
+- 반응형 디자인
+- 실시간 시장 데이터 업데이트
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 시작하기
+
+### 필수 조건
+
+- Node.js 18.0.0 이상
+- npm 9.0.0 이상
+
+### 설치
+
+```bash
+# 저장소 클론
+git clone [repository-url]
+
+# 프로젝트 디렉토리로 이동
+cd crypto-tracker
+
+# 의존성 설치
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 개발 서버 실행
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+### 빌드
+
+```bash
+npm run build
+```
+
+## 프로젝트 구조
+
+```
+src/
+├── assets/        # 이미지, 폰트 등 정적 파일
+├── components/    # 재사용 가능한 컴포넌트
+├── contexts/      # React Context
+├── styles/        # 전역 스타일 및 테마
+└── types/         # TypeScript 타입 정의
+```
+
+## 테마 시스템
+
+프로젝트는 다크/라이트 모드를 지원하는 테마 시스템을 구현했습니다:
+
+- 라이트 모드: 밝은 배경과 어두운 텍스트
+- 다크 모드: 어두운 배경과 밝은 텍스트
+
+테마는 로컬 스토리지에 저장되어 사용자의 선호도를 유지합니다.
+
+## 라이선스
+
+MIT License

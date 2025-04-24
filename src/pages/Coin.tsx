@@ -135,6 +135,12 @@ const ContentContainer = styled.div`
   margin-top: ${props => props.theme.spacing.lg};
 `;
 
+const defaultPriceData: CoinPriceData = {
+  prices: [],
+  market_caps: [],
+  total_volumes: []
+};
+
 const Coin = () => {
   const { coinId } = useParams<{ coinId: string }>();
   const navigate = useNavigate();
@@ -145,15 +151,15 @@ const Coin = () => {
     queryFn: () => fetchCoinDetail(coinId!),
     enabled: !!coinId,
     retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  const { data: priceHistory, isLoading: isLoadingPrice, isError: isPriceError } = useQuery<CoinPriceData[]>({
+  const { data: priceHistory, isLoading: isLoadingPrice, isError: isPriceError } = useQuery<CoinPriceData, Error>({
     queryKey: ['coinPrice', coinId],
     queryFn: () => fetchCoinPriceHistory(coinId!),
     enabled: !!coinId && activeTab === 'chart',
     retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoadingDetail) {
@@ -248,7 +254,7 @@ const Coin = () => {
             <LoadingSpinner>Loading price history...</LoadingSpinner>
           ) : (
             <PriceChart
-              priceHistory={priceHistory || []}
+              priceHistory={priceHistory || defaultPriceData}
               coinName={coinDetail.name}
             />
           )

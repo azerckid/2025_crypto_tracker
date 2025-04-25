@@ -11,6 +11,7 @@ import SortSection from '../components/filters/SortSection';
 import LoadingSpinner from '../components/loading/LoadingSpinner';
 import ErrorMessage from '../components/error/ErrorMessage';
 import useDebounce from '../hooks/useDebounce';
+import useFavorites from '../hooks/useFavorites';
 
 const CoinsContainer = styled.div`
   padding: ${props => props.theme.spacing.md};
@@ -45,6 +46,7 @@ const Coins = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const perPage = 20;
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   // URL 파라미터에서 검색, 필터, 정렬 상태 가져오기
   const searchQuery = searchParams.get('search') || '';
@@ -175,6 +177,14 @@ const Coins = () => {
     });
   };
 
+  const handleToggleFavorite = (coin: Coin) => {
+    if (isFavorite(coin.id)) {
+      removeFavorite(coin.id);
+    } else {
+      addFavorite(coin);
+    }
+  };
+
   const isLoading = isCoinsLoading || isSearchLoading || isSearchCoinsLoading;
 
   if (isLoading) {
@@ -231,7 +241,12 @@ const Coins = () => {
           </NoResultsMessage>
         ) : (
           sortedCoins?.map((coin) => (
-            <CoinCard key={coin.id} coin={coin} />
+            <CoinCard
+              key={coin.id}
+              coin={coin}
+              isFavorite={isFavorite(coin.id)}
+              onToggleFavorite={() => handleToggleFavorite(coin)}
+            />
           ))
         )}
       </CoinsList>

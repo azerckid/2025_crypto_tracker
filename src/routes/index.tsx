@@ -6,6 +6,7 @@ import CoinChart from '../pages/CoinChart';
 import Home from '../pages/Home';
 import About from '../pages/About';
 import NotFound from '../pages/NotFound';
+import Favorites from '../pages/Favorites';
 import App from '../App';
 
 export const router = createBrowserRouter([
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
             {
                 path: 'coins',
                 element: <Coins />,
+            },
+            {
+                path: 'favorites',
+                element: <Favorites />,
             },
             {
                 path: 'coins/:coinId',

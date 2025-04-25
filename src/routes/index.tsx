@@ -1,18 +1,31 @@
-import { Routes, Route } from 'react-router-dom';
-import Coins from '../pages/Coins.tsx';
-import Coin from '../pages/Coin.tsx';
-import Home from '../pages/Home.tsx';
-import About from '../pages/About.tsx';
+import { createBrowserRouter } from 'react-router-dom';
+import Coins from '../pages/Coins';
+import Coin from '../pages/Coin';
+import Home from '../pages/Home';
+import About from '../pages/About';
+import App from '../App';
 
-const AppRoutes = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/coins" element={<Coins />} />
-            <Route path="/coins/:coinId" element={<Coin />} />
-        </Routes>
-    );
-};
-
-export default AppRoutes; 
+export const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <App />,
+        children: [
+            {
+                index: true,
+                element: <Home />,
+            },
+            {
+                path: 'about',
+                element: <About />,
+            },
+            {
+                path: 'coins',
+                element: <Coins />,
+            },
+            {
+                path: 'coins/:coinId',
+                element: <Coin />,
+            },
+        ],
+    },
+]); 

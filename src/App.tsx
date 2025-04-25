@@ -1,7 +1,6 @@
-import { BrowserRouter as Router } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTheme } from './contexts/ThemeContext'
-import AppRoutes from './routes'
+import { Outlet } from 'react-router-dom'
 
 const Container = styled.div`
   max-width: 1200px;
@@ -47,19 +46,17 @@ function App() {
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (
-    <Router>
-      <Container>
-        <Header>
-          <Title>Crypto Tracker</Title>
-          <ThemeToggle onClick={toggleTheme}>
-            {isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode'}
-          </ThemeToggle>
-        </Header>
-        <PageContainer>
-          <AppRoutes />
-        </PageContainer>
-      </Container>
-    </Router>
+    <Container>
+      <Header>
+        <Title>Crypto Tracker</Title>
+        <ThemeToggle onClick={toggleTheme}>
+          {isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode'}
+        </ThemeToggle>
+      </Header>
+      <PageContainer>
+        <Outlet />
+      </PageContainer>
+    </Container>
   )
 }
 

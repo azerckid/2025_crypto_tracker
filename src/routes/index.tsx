@@ -3,6 +3,7 @@ import Coins from '../pages/Coins';
 import Coin from '../pages/Coin';
 import Home from '../pages/Home';
 import About from '../pages/About';
+import NotFound from '../pages/NotFound';
 import App from '../App';
 
 export const router = createBrowserRouter([
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
             {
                 path: 'coins/:coinId',
                 element: <Coin />,
+            },
+            {
+                path: '*',
+                element: <NotFound />,
             },
         ],
     },

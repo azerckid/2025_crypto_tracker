@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { router } from './routes/index'
 import { RouterProvider } from 'react-router-dom'
-import { router } from './routes'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import GlobalStyle from './styles/GlobalStyle'
 import { ThemeProvider } from './contexts/ThemeContext'
 

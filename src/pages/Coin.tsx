@@ -3,107 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { useState } from 'react';
 import { fetchCoinDetail, fetchCoinPriceHistory, CoinDetail, CoinPriceData } from '../api/coins';
-import PriceChart from '../components/PriceChart';
+import PriceChart from '../components/charts/PriceChart';
+import CoinHeader from '../components/coins/CoinHeader';
+import BackButton from '../components/buttons/BackButton';
+import Tabs from '../components/tabs/Tabs';
+import PriceCard from '../components/cards/PriceCard';
+import LoadingSpinner from '../components/loading/LoadingSpinner';
+import ErrorMessage from '../components/error/ErrorMessage';
 
 const CoinContainer = styled.div`
   padding: ${props => props.theme.spacing.md};
-`;
-
-const BackButton = styled.button`
-  display: inline-block;
-  margin-bottom: ${props => props.theme.spacing.md};
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.surface};
-  color: ${props => props.theme.colors.text};
-  border-radius: ${props => props.theme.borderRadius.md};
-  text-decoration: none;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: ${props => props.theme.colors.primary};
-    color: white;
-  }
-`;
-
-const LoadingSpinner = styled.div`
-  text-align: center;
-  padding: ${props => props.theme.spacing.xl};
-  color: ${props => props.theme.colors.textSecondary};
-  font-size: 1.2rem;
-`;
-
-const ErrorMessage = styled.div`
-  text-align: center;
-  color: ${props => props.theme.colors.error};
-  padding: ${props => props.theme.spacing.xl};
-  font-size: 1.2rem;
-`;
-
-const RetryButton = styled.button`
-  margin-top: ${props => props.theme.spacing.md};
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.lg};
-  background-color: ${props => props.theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: ${props => props.theme.borderRadius.md};
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`;
-
-const CoinHeader = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: ${props => props.theme.spacing.lg};
-`;
-
-const CoinImage = styled.img`
-  width: 64px;
-  height: 64px;
-  margin-right: ${props => props.theme.spacing.md};
-`;
-
-const CoinInfo = styled.div`
-  flex: 1;
-`;
-
-const CoinName = styled.h3`
-  margin: 0;
-  color: ${props => props.theme.colors.text};
-`;
-
-const CoinSymbol = styled.span`
-  color: ${props => props.theme.colors.textSecondary};
-  text-transform: uppercase;
-`;
-
-const Tabs = styled.div`
-  display: flex;
-  gap: ${props => props.theme.spacing.md};
-  margin-bottom: ${props => props.theme.spacing.lg};
-`;
-
-const Tab = styled.button<{ isActive: boolean }>`
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.lg};
-  background-color: ${props => props.isActive ? props.theme.colors.primary : props.theme.colors.surface};
-  color: ${props => props.isActive ? 'white' : props.theme.colors.text};
-  border: none;
-  border-radius: ${props => props.theme.borderRadius.md};
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`;
-
-const CoinDescription = styled.div`
-  margin-top: ${props => props.theme.spacing.lg};
-  line-height: 1.6;
-  color: ${props => props.theme.colors.text};
 `;
 
 const PriceInfo = styled.div`
@@ -113,21 +22,9 @@ const PriceInfo = styled.div`
   margin-top: ${props => props.theme.spacing.lg};
 `;
 
-const PriceCard = styled.div`
-  padding: ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.surface};
-  border-radius: ${props => props.theme.borderRadius.md};
-  box-shadow: ${props => props.theme.shadows.sm};
-`;
-
-const PriceLabel = styled.div`
-  color: ${props => props.theme.colors.textSecondary};
-  margin-bottom: ${props => props.theme.spacing.xs};
-`;
-
-const PriceValue = styled.div`
-  font-size: 1.2rem;
-  font-weight: bold;
+const CoinDescription = styled.div`
+  margin-top: ${props => props.theme.spacing.lg};
+  line-height: 1.6;
   color: ${props => props.theme.colors.text};
 `;
 
@@ -165,10 +62,8 @@ const Coin = () => {
   if (isLoadingDetail) {
     return (
       <CoinContainer>
-        <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
-        <LoadingSpinner>
-          Loading coin details...
-        </LoadingSpinner>
+        <BackButton onClick={() => navigate(-1)} />
+        <LoadingSpinner message="Loading coin details..." />
       </CoinContainer>
     );
   }
@@ -176,13 +71,11 @@ const Coin = () => {
   if (isDetailError || (activeTab === 'chart' && isPriceError)) {
     return (
       <CoinContainer>
-        <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
-        <ErrorMessage>
-          <div>Error loading coin data. Please try again later.</div>
-          <RetryButton onClick={() => {
-            refetchDetail();
-          }}>Retry</RetryButton>
-        </ErrorMessage>
+        <BackButton onClick={() => navigate(-1)} />
+        <ErrorMessage
+          message="Error loading coin data. Please try again later."
+          onRetry={() => refetchDetail()}
+        />
       </CoinContainer>
     );
   }
@@ -190,56 +83,48 @@ const Coin = () => {
   if (!coinDetail) {
     return (
       <CoinContainer>
-        <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
-        <ErrorMessage>
-          <div>No data available for this coin.</div>
-        </ErrorMessage>
+        <BackButton onClick={() => navigate(-1)} />
+        <ErrorMessage message="No data available for this coin." />
       </CoinContainer>
     );
   }
 
+  const tabs = [
+    { id: 'price', label: 'Price' },
+    { id: 'chart', label: 'Chart' }
+  ];
+
   return (
     <CoinContainer>
-      <BackButton onClick={() => navigate(-1)}>← Back</BackButton>
-      <CoinHeader>
-        <CoinImage src={coinDetail.image.large} alt={coinDetail.name} />
-        <CoinInfo>
-          <CoinName>{coinDetail.name}</CoinName>
-          <CoinSymbol>{coinDetail.symbol.toUpperCase()}</CoinSymbol>
-        </CoinInfo>
-      </CoinHeader>
+      <BackButton onClick={() => navigate(-1)} />
+      <CoinHeader
+        name={coinDetail.name}
+        symbol={coinDetail.symbol}
+        image={coinDetail.image.large}
+      />
 
-      <Tabs>
-        <Tab
-          isActive={activeTab === 'price'}
-          onClick={() => setActiveTab('price')}
-        >
-          Price
-        </Tab>
-        <Tab
-          isActive={activeTab === 'chart'}
-          onClick={() => setActiveTab('chart')}
-        >
-          Chart
-        </Tab>
-      </Tabs>
+      <Tabs
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as 'price' | 'chart')}
+        tabs={tabs}
+      />
 
       <ContentContainer>
         {activeTab === 'price' && (
           <>
             <PriceInfo>
-              <PriceCard>
-                <PriceLabel>Current Price</PriceLabel>
-                <PriceValue>${coinDetail.market_data.current_price.usd.toLocaleString()}</PriceValue>
-              </PriceCard>
-              <PriceCard>
-                <PriceLabel>All Time High</PriceLabel>
-                <PriceValue>${coinDetail.market_data.ath.usd.toLocaleString()}</PriceValue>
-              </PriceCard>
-              <PriceCard>
-                <PriceLabel>All Time Low</PriceLabel>
-                <PriceValue>${coinDetail.market_data.atl.usd.toLocaleString()}</PriceValue>
-              </PriceCard>
+              <PriceCard
+                label="Current Price"
+                value={`$${coinDetail.market_data.current_price.usd.toLocaleString()}`}
+              />
+              <PriceCard
+                label="All Time High"
+                value={`$${coinDetail.market_data.ath.usd.toLocaleString()}`}
+              />
+              <PriceCard
+                label="All Time Low"
+                value={`$${coinDetail.market_data.atl.usd.toLocaleString()}`}
+              />
             </PriceInfo>
 
             <CoinDescription>
@@ -251,7 +136,7 @@ const Coin = () => {
 
         {activeTab === 'chart' && (
           isLoadingPrice ? (
-            <LoadingSpinner>Loading price history...</LoadingSpinner>
+            <LoadingSpinner message="Loading price history..." />
           ) : (
             <PriceChart
               priceHistory={priceHistory || defaultPriceData}

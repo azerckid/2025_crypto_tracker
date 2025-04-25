@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const HomeContainer = styled.div`
@@ -18,14 +18,15 @@ const Description = styled.p`
   line-height: 1.6;
 `;
 
-const StyledLink = styled(Link)`
+const NavigateButton = styled.button`
   display: inline-block;
   padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.lg};
   background-color: ${props => props.theme.colors.primary};
   color: white;
-  text-decoration: none;
+  border: none;
   border-radius: ${props => props.theme.borderRadius.md};
   font-size: 1.1rem;
+  cursor: pointer;
   transition: opacity 0.2s ease;
 
   &:hover {
@@ -34,15 +35,17 @@ const StyledLink = styled(Link)`
 `;
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <HomeContainer>
       <Title>Welcome to Crypto Tracker</Title>
       <Description>
         Track real-time cryptocurrency prices, view detailed charts, and stay updated with the latest market trends.
       </Description>
-      <StyledLink to="/coins">
+      <NavigateButton onClick={() => navigate('/coins')}>
         View Cryptocurrency List
-      </StyledLink>
+      </NavigateButton>
     </HomeContainer>
   );
 };

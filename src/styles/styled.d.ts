@@ -4,11 +4,9 @@ declare module 'styled-components' {
     export interface DefaultTheme {
         colors: {
             primary: string;
-            background: string;
             surface: string;
             text: string;
             textSecondary: string;
-            border: string;
             error: string;
             success: string;
         };
@@ -27,7 +25,6 @@ declare module 'styled-components' {
         shadows: {
             sm: string;
             md: string;
-            lg: string;
         };
     }
 } 

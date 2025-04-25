@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Coin } from '../api/coins';
-
-const FAVORITES_KEY = 'crypto_favorites';
+import { db } from '../utils/indexedDB';
 
 export const useFavorites = () => {
     const [favorites, setFavorites] = useState<Coin[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // 초기 로드 시 localStorage에서 즐겨찾기 가져오기
+    // 초기 로드 시 IndexedDB에서 즐겨찾기 가져오기
     useEffect(() => {
-        const loadFavorites = () => {
+        const loadFavorites = async () => {
             try {
-                const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-                if (storedFavorites) {
-                    setFavorites(JSON.parse(storedFavorites));
-                }
+                await db.openDB();
+                const storedFavorites = await db.getAll();
+                setFavorites(storedFavorites);
             } catch (error) {
                 console.error('Error loading favorites:', error);
             } finally {
@@ -26,33 +24,46 @@ export const useFavorites = () => {
     }, []);
 
     // 즐겨찾기 추가
-    const addFavorite = (coin: Coin) => {
+    const addFavorite = async (coin: Coin) => {
         if (favorites.length >= 5) {
             alert('즐겨찾기는 최대 5개까지만 추가할 수 있습니다.');
             return false;
         }
 
-        if (favorites.some(fav => fav.id === coin.id)) {
-            alert('이미 즐겨찾기에 추가된 코인입니다.');
+        try {
+            const exists = await db.has(coin.id);
+            if (exists) {
+                alert('이미 즐겨찾기에 추가된 코인입니다.');
+                return false;
+            }
+
+            await db.add(coin);
+            setFavorites(prev => [...prev, coin]);
+            return true;
+        } catch (error) {
+            console.error('Error adding favorite:', error);
             return false;
         }
-
-        const newFavorites = [...favorites, coin];
-        setFavorites(newFavorites);
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
-        return true;
     };
 
     // 즐겨찾기 제거
-    const removeFavorite = (coinId: string) => {
-        const newFavorites = favorites.filter(coin => coin.id !== coinId);
-        setFavorites(newFavorites);
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+    const removeFavorite = async (coinId: string) => {
+        try {
+            await db.remove(coinId);
+            setFavorites(prev => prev.filter(coin => coin.id !== coinId));
+        } catch (error) {
+            console.error('Error removing favorite:', error);
+        }
     };
 
     // 즐겨찾기 여부 확인
-    const isFavorite = (coinId: string) => {
-        return favorites.some(coin => coin.id === coinId);
+    const isFavorite = async (coinId: string) => {
+        try {
+            return await db.has(coinId);
+        } catch (error) {
+            console.error('Error checking favorite status:', error);
+            return false;
+        }
     };
 
     return {

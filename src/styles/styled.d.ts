@@ -1,30 +1,6 @@
 import 'styled-components';
+import { Theme } from './theme';
 
 declare module 'styled-components' {
-    export interface DefaultTheme {
-        colors: {
-            primary: string;
-            surface: string;
-            text: string;
-            textSecondary: string;
-            error: string;
-            success: string;
-        };
-        spacing: {
-            xs: string;
-            sm: string;
-            md: string;
-            lg: string;
-            xl: string;
-        };
-        borderRadius: {
-            sm: string;
-            md: string;
-            lg: string;
-        };
-        shadows: {
-            sm: string;
-            md: string;
-        };
-    }
+    export interface DefaultTheme extends Theme { }
 } 

@@ -19,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     line-height: 1.5;
     color: ${props => props.theme.colors.text};
-    background-color: ${props => props.theme.colors.background};
+    background-color: ${props => props.theme.colors.surface};
   }
 
   img, picture, video, canvas, svg {

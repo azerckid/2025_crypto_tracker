@@ -12,7 +12,7 @@ const PageButton = styled.button<{ active?: boolean }>`
   padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
   background-color: ${props => props.active ? props.theme.colors.primary : props.theme.colors.surface};
   color: ${props => props.active ? 'white' : props.theme.colors.text};
-  border: 1px solid ${props => props.theme.colors.border};
+  border: 1px solid ${props => props.theme.colors.textSecondary};
   border-radius: ${props => props.theme.borderRadius.md};
   cursor: pointer;
   transition: all 0.2s ease;

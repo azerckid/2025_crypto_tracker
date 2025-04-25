@@ -52,6 +52,17 @@ export interface CoinPriceData {
     total_volumes: [number, number][]; // [timestamp, total_volume]
 }
 
+export interface SearchResult {
+    coins: {
+        id: string;
+        name: string;
+        symbol: string;
+        market_cap_rank: number;
+        thumb: string;
+        large: string;
+    }[];
+}
+
 // API 함수
 export const fetchCoins = async (page: number = 1, perPage: number = 20): Promise<Coin[]> => {
     const response = await axios.get(`${COINGECKO_URL}/coins/markets`, {
@@ -86,6 +97,15 @@ export const fetchCoinPriceHistory = async (coinId: string): Promise<CoinPriceDa
             vs_currency: 'usd',
             days: 30,
             interval: 'daily',
+        },
+    });
+    return response.data;
+};
+
+export const searchCoins = async (query: string): Promise<SearchResult> => {
+    const response = await axios.get(`${COINGECKO_URL}/search`, {
+        params: {
+            query,
         },
     });
     return response.data;

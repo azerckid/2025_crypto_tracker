@@ -11,7 +11,7 @@ import {
     ChartOptions
 } from 'chart.js';
 import styled from 'styled-components';
-import { CoinPriceData } from '../api/coins';
+import { CoinPriceData } from '../../api/coins';
 
 ChartJS.register(
     CategoryScale,
@@ -86,13 +86,13 @@ const PriceChart = ({ priceHistory, coinName }: PriceChartProps) => {
     };
 
     const data = {
-        labels: priceHistory.prices.map(([timestamp]) =>
+        labels: priceHistory.prices.map(([timestamp]: [number, number]) =>
             new Date(timestamp).toLocaleDateString()
         ),
         datasets: [
             {
                 label: 'Price (USD)',
-                data: priceHistory.prices.map(([, price]) => price),
+                data: priceHistory.prices.map(([, price]: [number, number]) => price),
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 tension: 0.1,

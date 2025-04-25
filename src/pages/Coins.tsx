@@ -89,7 +89,6 @@ const Coins = () => {
           <CoinCard key={coin.id} coin={coin} />
         ))}
       </CoinsList>
-
       <Pagination
         currentPage={page}
         totalPages={5}
